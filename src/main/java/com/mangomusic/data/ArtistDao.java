@@ -24,15 +24,13 @@ public class ArtistDao {
                 "WHERE name LIKE ? " +
                 "ORDER BY name";
 
-        try {
-            Connection connection = dataManager.getConnection();
 
-            try (PreparedStatement statement = connection.prepareStatement(query)) {
+        try (Connection connection = dataManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
 
-                statement.setString(1, "%" + searchTerm + "%");
+            statement.setString(1, "%" + searchTerm + "%");
 
-                ResultSet results = statement.executeQuery();
-
+            try (ResultSet results = statement.executeQuery()) {
                 while (results.next()) {
                     int artistId = results.getInt("artist_id");
                     String name = results.getString("name");
@@ -46,10 +44,12 @@ public class ArtistDao {
         } catch (SQLException e) {
             System.err.println("Error searching for artists: " + e.getMessage());
             e.printStackTrace();
+
         }
 
         return artists;
     }
+
 
     public List<String> getAllGenres() {
         List<String> genres = new ArrayList<>();
